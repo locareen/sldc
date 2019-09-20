@@ -1,0 +1,100 @@
+#!/bin/bash
+PROGNAME=$(basename ${0})
+function usage() {
+    cat <<EOF
+$PROGNAME is a tool for making iso of SereneLinux
+
+Usage:
+    $PROGNAME [diskimage] [version] [<options>]
+
+Example:
+    $PROGNAME image.img   19q1.6.5
+Options:
+    --version       print $PROGNAME version
+    -h, --help      print this
+EOF
+}
+
+## check if not run this as root.
+if [ $UID == 0 ]; then
+    echo "You must not run as root." 1>&2
+    exit 1
+fi
+## check if depend softwares are installing
+function isinstall() {
+    if ! type $1 >/dev/null 2>&1; then
+    echo "${1} is not installing." 1>&2
+    echo "May be you need to install ${2}." 1>&2
+    exit 1
+    fi
+}
+
+isinstall qemu-img qemu
+isinstall xhost xorg-xhost
+## check if not anything mounted on /mnt
+if mountpoint -q /mnt; then
+    echo "anything mounted on /mnt" 1>&2
+    echo "Please unmount." 1>&2
+    exit 1
+fi
+## check if arguments is correct
+for OPT in "$@"; do
+    case "$OPT" in
+        '-h'|'--help' )
+            usage
+            exit 1 ;;
+        '--version' )
+            echo $PROGNAME 1.00
+            exit 1 ;;
+        '-m' | '--no-umount' )
+            NOUMOUNT=true
+            shift 1 ;;
+        '-*' )
+            echo "Unknown option: $(echo $1 | sed 's/^-*//')" 1>&2
+            exit 1 ;;
+        *)
+            if [[ -n "$1" ]] && [[ ! "$1" =~ ^-+ ]]; then
+                if [ ! -f $1 ]; then
+                    IMAGENAME=( "$1" )
+                    shift 1
+                elif [[ $1 =~ [1-9][1-9]q[1-4].[1-9].[1-9] ]]; then
+                    VERSION=( "$1" )
+                    shift 1
+                else
+                    echo "Unknown arguments $1" 1>&2
+                    exit 1
+                fi
+            fi ;;
+    esac
+done
+
+if [ -z $param ]; then
+    echo "$PROGNAME: too few arguments" 1>&2
+    echo "Try '$PROGNAME --help' for more information." 1>&2
+    exit 1
+fi
+
+TYPE=${1##*.}
+VERSION=$2
+IMAGENAME=/opt/slim/diskimages/serenelinux_dev_${VERSION}
+case "$TYPE" in
+    "ova" )
+        mkdir -p $IMAGENAME.d
+        tar xvf $1 -C $IMAGENAME.d
+        VMDK=$(ls -m | tr ',' '\n' | grep *.vmdk)
+        qemu-img convert -p -f vmdk -O raw $VMDK $IMAGENAME
+        rm -rf $IMAGENAME.d ;;
+
+    "vdi" | "vmdk" | "qcow2" | "qed" | "vhd" )
+        qemu-img convert -p -f $TYPE -O raw $1 $IMAGENAME ;;
+    "img" )
+        IMAGENAME=$1 ;;
+    * )
+        echo "This program supports format formats ova, vdi, vmdk, qcow2, qed, vhd and raw-img." 1>&2
+        echo "If you want to use excluding that, you must convert this to support format." 1>&2
+        exit 1 ;;
+esac
+
+cd /opt/slim
+sudo -E ./slim.sh
+
