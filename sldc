@@ -48,9 +48,9 @@ fi
 ## default var
 TYPE=img
 IMAGENAME=image.img
-IMAGEPATH=/opt/slim/image.img
+IMAGEPATH=/opt/sldc/image.img
 MOUNTPOINT=/mnt
-WORKDIR=/opt/slim/diskimages
+WORKDIR=/opt/sldc/diskimages
 INITCOMMAND="/home/serene/xinit.sh"
 NOUMOUNT=false
 ## check if arguments is correct

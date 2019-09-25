@@ -9,7 +9,7 @@ fi
 if [ $HOME == "/root" ]; then
     echo "You must run this with 'sudo -E'."
 fi
-## please refer /usr/bin/slim.
+## please refer /usr/bin/sldc.
 WORKDIR=$1
 IMAGENAME=$2
 MOUNTPOINT=$3
