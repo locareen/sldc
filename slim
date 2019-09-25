@@ -13,9 +13,10 @@ Example:
 Options:
     --version        print $PROGNAME version
     -h, --help       print this
-    -m, --no-umount  no umount when this program is ended
-    -w, --workdir    specify where to work directory.
-    -p, --mountpoint specify where to mount point.
+    -m, --no-umont   no umount when this program is ended
+    -w, --workdir    specify where to work directory
+    -p, --mountpoint specify where to mount point
+    -c, --command    Specify the command to start the container
 EOF
 }
 
@@ -36,10 +37,6 @@ function isinstall() {
 if [ $UID == 0 ]; then
     printerror "You must not run as root."
 fi
-## check if arguments is typed.
-if [[ $# < 1 ]]; then
-    printerror "you must type at least one arguments."
-fi
 ## check if depend softwares are installing
 
 isinstall qemu-img qemu
@@ -49,9 +46,13 @@ if mountpoint -q /mnt; then
     printerror "anything mounted on /mnt"
 fi
 ## default var
-IMAGENAME=/opt/slim/image.img
+TYPE=img
+IMAGENAME=image.img
+IMAGEPATH=/opt/slim/image.img
 MOUNTPOINT=/mnt
 WORKDIR=/opt/slim/diskimages
+INITCOMMAND="/home/serene/xinit.sh"
+NOUMOUNT=false
 ## check if arguments is correct
 for OPT in "$@"; do
     case "$OPT" in
@@ -70,13 +71,16 @@ for OPT in "$@"; do
         '-p' | '--mountpoint' )
             MOUNTPOINT=$2
             shift 2 ;;
+        '-c' | '--command' )
+            INITCOMMAND=$2
+            shift 2 ;;
         '-*' )
             echo "Unknown option: $(echo $1 | sed 's/^-*//')" 1>&2
             exit 1 ;;
         *)
             if [[ -n "$1" ]] && [[ ! "$1" =~ ^-+ ]]; then
                 if [ -f $1 ]; then
-                    IMAGENAME=$1
+                    IMAGEPATH=$1
                     shift 1
                 elif [[ $1 =~ [1-9][1-9]q[1-4].[1-9].[1-9] ]]; then
                     VERSION=$1
@@ -90,7 +94,10 @@ done
 if [[ ! $VERSION == "" ]]; then
     IMAGEPATH=${WORKDIR}/serenelinux_dev_basix_${VERSION}.img
     IMAGENAME=serenelinux_dev_basix_${VERSION}.img
+else
+    IMAGENAME=${IMAGEPATH##*/}
 fi
+WORKDIR=${IMAGEPATH%/*}
 TYPE=${IMAGENAME##*.}
 case "$TYPE" in
     "ova" )
@@ -108,4 +115,4 @@ case "$TYPE" in
         printerror "This program supports format formats ova, vdi, vmdk, qcow2, qed, vhd and raw-img.\nIf you want to use excluding that, you must convert this to support format." ;;
 esac
 
-exec sudo -E ./slim.sh $WORKDIR $IMAGENAME $MOUNTPOINT $NOUMOUNT
+exec sudo -E ./slim.sh $WORKDIR $IMAGENAME $MOUNTPOINT $INITCOMMAND $NOUMOUNT
