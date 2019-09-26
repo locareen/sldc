@@ -1,10 +1,11 @@
 # SereneLinux開発者向けコンテナ
-===
 
 ## 概要
 
 SereneLinux開発者向けの仮想コンテナ生成ツールです。
+
 OVAやvdi, vmdkから生ディスクイメージを抽出し、生成した生ディスクイメージをloopでマウントします。
+
 systemd-nspawnで起動し、Xephyrを使いホストのXに重ねて起動します。
 
 ## 対応形式
@@ -39,13 +40,19 @@ $ sldc (PATH) -c (COMMAND)
 と**絶対パスで**指定してください。(修正予定)
 
 デフォルトでは /mnt にイメージをマウントします。マウントポイントを変更したい場合は
+
 `-p (MOUNTPOINT) ` もしくは `--mountpoint (MOUNTPOINT)` で指定ができます。
 
-コンテナから出た際、自動でアンマウントする設定になっています。もし手動でアンマウントしたい場合は
+コンテナから出た際、自動でアンマウントする設定になっています。
+
+もし手動でアンマウントしたい場合は
+
 `-m` もしくは `--no-umount` で自動アンマウントを無効にできます。
 
 ## おまけ
+
 dmountがおまけで付いてきます。
+
 dmountとはsldcの生ディスクイメージマウント機能だけを取り出したものです。使い方は下記の通りです。
 
 ```
@@ -58,14 +65,17 @@ dmountとはsldcの生ディスクイメージマウント機能だけを取り�
 ```
 
 SereneLinux開発者へ
+
 /opt/sldc/diskimages下にディスクイメージを設置している場合、バージョン名での指定も可能です。
+
 また、SereneLinux19q2.6.5以降のイメージには /home/serene/xinit.sh が設置済みなので起動時のコマンド指定は不要です。
 
 # SereneLinux Container for its developers
-===
+
 ## Overview
 
 Extract the raw disk image from the virtual disk and mount it.
+
 Then start it with systemd-nspawn and nest X with Xephyr.
 
 ## Support format
