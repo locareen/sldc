@@ -44,6 +44,19 @@ $ sldc (PATH) -c (COMMAND)
 コンテナから出た際、自動でアンマウントする設定になっています。もし手動でアンマウントしたい場合は
 `-m` もしくは `--no-umount` で自動アンマウントを無効にできます。
 
+## おまけ
+dmountがおまけで付いてきます。
+dmountとはsldcの生ディスクイメージマウント機能だけを取り出したものです。使い方は下記の通りです。
+
+```
+
+# dmount [imagename] [mountpoint]
+
+例
+# dmount image.img /mnt
+
+```
+
 SereneLinux開発者へ
 /opt/sldc/diskimages下にディスクイメージを設置している場合、バージョン名での指定も可能です。
 また、SereneLinux19q2.6.5以降のイメージには /home/serene/xinit.sh が設置済みなので起動時のコマンド指定は不要です。
