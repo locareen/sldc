@@ -7,13 +7,25 @@
     </head>
 
     <body>
-        <main>
-            <h1>GitHub Pages のサンプルです</h1>
-            <a href="http://www.tam-tam.co.jp/tipsnote/"><button>TipsNote に戻る</button></a>
-        </main>
+         <!-- <script src="http://d3js.org/d3.v3.min.js"></script> -->
+        <script src="d3.min.js?v=3.2.8"></script>
 
-        <script>
-            console.log('GitHub Pages Sample');
+        <script type="text/javascript"charset="utf-8">
+            d3.text("serenelinux-vcs.csv", function(data) {
+                var parsedCSV = d3.csv.parseRows(data);
+
+                var container = d3.select("body")
+                    .append("table")
+
+                    .selectAll("tr")
+                        .data(parsedCSV).enter()
+                        .append("tr")
+
+                    .selectAll("td")
+                        .data(function(d) { return d; }).enter()
+                        .append("td")
+                        .text(function(d) { return d; });
+            });
         </script>
     </body>
 </html>

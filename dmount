@@ -1,2 +1,0 @@
-#!/bin/bash
-mount -o loop,rw,offset=1048576 $1 $2
