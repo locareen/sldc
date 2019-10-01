@@ -53,6 +53,7 @@ MOUNTPOINT=/mnt
 WORKDIR=/opt/sldc/diskimages
 INITCOMMAND="/home/serene/xinit.sh"
 NOUMOUNT=false
+VERSION=$(/usr/share/sldc/get-version.py)
 ## check if arguments is correct
 for OPT in "$@"; do
     case "$OPT" in
@@ -115,4 +116,4 @@ case "$TYPE" in
         printerror "This program supports format formats ova, vdi, vmdk, qcow2, qed, vhd and raw-img.\nIf you want to use excluding that, you must convert this to support format." ;;
 esac
 
-exec sudo -E sldc.sh $WORKDIR $IMAGENAME $MOUNTPOINT $INITCOMMAND $NOUMOUNT
+exec sudo -E /uar/share/sldc/sldc.sh $WORKDIR $IMAGENAME $MOUNTPOINT $INITCOMMAND $NOUMOUNT
